@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import ImageGrab
-from pynput import mouse
+from pynput import mouse, keyboard
 
 # 処理を制御するフラグ
 processing_enabled = True
@@ -11,36 +11,33 @@ def get_color_at_position(x, y):
     color = screenshot.getpixel((x, y))
     return color
 
-def update_color_info(x, y):
+def update_color_info():
     """カラー情報をメインウィンドウに表示"""
-    color = get_color_at_position(x, y)
-    r, g, b = color
-    hex_color = '#{:02x}{:02x}{:02x}'.format(r, g, b)
-    
-    # メインウィンドウのラベルに情報を表示
-    info_label.config(text=f"マウス座標: ({x}, {y})\nRGBカラーコード: R={r}, G={g}, B={b}\n16進数カラーコード: {hex_color}")
-
-def on_move(x, y):
-    """マウス移動イベントを処理"""
     if processing_enabled:
-        update_color_info(x, y)
+        x, y = mouse_controller.position
+        color = get_color_at_position(x, y)
+        r, g, b = color
+        hex_color = '#{:02x}{:02x}{:02x}'.format(r, g, b)
         
-        # ダイアログボックスの右下角をマウスカーソルの左30px 上30pxに移動
-        width = 300
-        height = 150
-        x_position = x - width - 50
-        y_position = y - height - 80
-        root.geometry(f"{width}x{height}+{x_position}+{y_position}")
+        # メインウィンドウのラベルに情報を表示
+        info_label.config(text=f"マウス座標: ({x}, {y})\nRGBカラーコード: R={r}, G={g}, B={b}\n16進数カラーコード: {hex_color}")
+        
+        # 次の更新をスケジュールする
+        root.after(10, update_color_info)
 
-def on_click(x, y, button, pressed):
-    """マウスクリックイベントを処理"""
+def on_key_press(key):
+    """キー押下イベントを処理"""
     global processing_enabled
-    if button == mouse.Button.left and not pressed:
-        # 左クリックで処理のオン/オフを切り替え
-        processing_enabled = not processing_enabled
+    try:
+        if key == keyboard.Key.enter:
+            processing_enabled = not processing_enabled
+            if processing_enabled:
+                update_color_info()  # 再開時に1回更新する
+    except AttributeError:
+        pass
 
 def main():
-    global root, info_label
+    global root, info_label, mouse_controller
     
     # tkinterのルートウィンドウを作成
     root = tk.Tk()
@@ -49,13 +46,23 @@ def main():
     # メインウィンドウのサイズと位置を指定
     root.geometry("300x150+100+100")  # 初期位置は仮で設定
     
+    # ウィンドウを常に最前面にする
+    root.wm_attributes("-topmost", 1)
+    
     # ラベルを作成して情報を表示
     info_label = tk.Label(root, text="マウスを動かして座標のカラーコードを取得します...", padx=10, pady=10)
     info_label.pack(expand=True, fill=tk.BOTH)
     
     # マウスリスナーを設定
-    with mouse.Listener(on_move=on_move, on_click=on_click) as listener:
-        root.mainloop()
+    mouse_controller = mouse.Controller()
+    
+    # キーボードリスナーを設定
+    key_listener = keyboard.Listener(on_press=on_key_press)
+    key_listener.start()
+    
+    update_color_info()  # 最初の更新を開始する
+    root.mainloop()
+    key_listener.stop()
 
 if __name__ == "__main__":
     main()
