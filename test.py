@@ -19,7 +19,7 @@ def get_window_top_left_coordinates(window_title):
     hwnd = win32gui.FindWindow(None, window_title)
     if hwnd == 0:
         print("Window not found!")
-        return
+        
 
     # ウィンドウの座標を取得
     rect = win32gui.GetWindowRect(hwnd)
@@ -35,6 +35,7 @@ right_x, right_y = (360, 600) #右
 blue_button = (766, 604)
 URDL = [(376, 606), (360, 600), (376, 586), (380, 600)]
 x , y = get_window_top_left_coordinates(settings.TITLE)
+
 w = 72
 
 def press_key(index):
@@ -61,10 +62,15 @@ def display_key(index):
     elif index == 3:
         print('左')
         
+
 while True:
+    cnt = 0
     if get_color_at_position(blue_button[0] + x, blue_button[1] + y) == (0, 131, 218):
         ww = 0
+        if cnt == 4:
+            cnt = 0
         yajirusi_arr = []
+        time.sleep(4)
         for i in range(5):
             for index, arr in enumerate(URDL):
                 pos_x = arr[0] + x + ww
@@ -73,22 +79,11 @@ while True:
                 if color == (3, 183, 33):
                     yajirusi_arr.append(index)
             ww += w
-        # print(yajirusi_arr)
-        time.sleep(5)
         for index in yajirusi_arr:
             press_key(index)
         keyboard.press(Key.space)
         keyboard.release(Key.space)
-        # while get_color_at_position(blue_button[0] + x, blue_button[1] + y) == (0, 131, 218):
-        #     print('------------------------')
-        #     for index, arr in enumerate(URDL):
-        #         pos_x = arr[0] + x
-        #         pos_y = arr[1] + y
-        #         print(f'{get_color_at_position(pos_x, pos_y)}')
-        #         color = get_color_at_position(pos_x, pos_y)
-        #         if color == (3, 183, 33):
-        #             press_key(index)
-        #     time.sleep(1)
+            
             
 
 
