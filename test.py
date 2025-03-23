@@ -61,15 +61,14 @@ status = 0
 
 while True:
     try: 
-        x , y = get_window_top_left_coordinates(settings.TITLE)
+        x , y = get_window_top_left_coordinates(settings.TITLE)  or get_window_top_left_coordinates(settings.TITLE2)
 
     
         w = 72
 
-        print(x, y)
 
         while True:
-            x1, y1 = get_window_top_left_coordinates(settings.TITLE)
+            x1, y1 = get_window_top_left_coordinates(settings.TITLE)  or get_window_top_left_coordinates(settings.TITLE2)
             if not (x == x1 and y == y1):
                 break
             cnt = 0

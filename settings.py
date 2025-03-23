@@ -7,3 +7,4 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 TITLE = os.environ.get("TITLE")
+TITLE2 = os.environ.get("TITLE2")
