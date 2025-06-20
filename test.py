@@ -28,6 +28,7 @@ def get_window_top_left_coordinates(window_title):
     return (x, y)
 
 def press_key(index):
+    time.sleep(0.1)  # 0.1秒待機
     if index == 0:
         keyboard.press(Key.up)
         keyboard.release(Key.up)
