@@ -78,7 +78,7 @@ while True:
                 if cnt == 4:
                     cnt = 0
                 yajirusi_arr = []
-                time.sleep(3.6)
+                time.sleep(3.8)
                 for i in range(5):
                     for index, arr in enumerate(URDL):
                         pos_x = arr[0] + x + ww
